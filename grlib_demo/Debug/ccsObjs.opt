@@ -1,0 +1,10 @@
+"./grlib_demo.obj"
+"./images.obj"
+"./startup_ccs.obj"
+"./drivers/Kentec320x240x16_ssd2119_spi.obj"
+"./drivers/touch.obj"
+"./utils/ustdlib.obj"
+"../grlib_demo_ccs.cmd"
+-l"C:/ti/TivaWare_C_Series-2.2.0.295/driverlib/ccs/Debug/driverlib.lib"
+-l"C:/ti/TivaWare_C_Series-2.2.0.295/grlib/ccs/Debug/grlib.lib"
+-llibc.a

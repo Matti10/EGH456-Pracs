@@ -1,0 +1,39 @@
+
+**** Build of configuration Debug for project blinky ****
+
+"C:\\ti\\ccs1220\\ccs\\utils\\bin\\gmake" -k -j 20 all -O 
+ 
+Building file: "../timers.c"
+Invoking: ARM Compiler
+"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me -O2 --include_path="C:/Users/n10467874/OneDrive - Queensland University of Technology/!EGH456/CCS-Workspace/blinky" --include_path="C:/ti/TivaWare_C_Series-2.2.0.295/examples/boards/ek-tm4c1294xl-boostxl-kentec-s1" --include_path="C:/ti/TivaWare_C_Series-2.2.0.295" --include_path="C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include" --define=ccs="ccs" --define=PART_TM4C1294NCPDT --define=TARGET_IS_TM4C129_RA1 -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --gen_func_subsections=on --abi=eabi --ual --preproc_with_compile --preproc_dependency="timers.d_raw"  "../timers.c"
+ 
+>> Compilation failure
+subdir_rules.mk:9: recipe for target 'timers.obj' failed
+"../timers.c", line 1: error #20: identifier "uint32_t" is undefined
+"../timers.c", line 2: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 2: error #60: function call is not allowed in a constant expression
+"../timers.c", line 2: error #20: identifier "SYSCTL_XTAL_25MHZ" is undefined
+"../timers.c", line 2: error #20: identifier "SYSCTL_OSC_MAIN" is undefined
+"../timers.c", line 2: error #20: identifier "SYSCTL_USE_PLL" is undefined
+"../timers.c", line 2: error #20: identifier "SYSCTL_CFG_VCO_480" is undefined
+"../timers.c", line 4: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 5: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 5: warning #93-D: identifier-list parameters may only be used in a function definition
+"../timers.c", line 6: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 6: warning #93-D: identifier-list parameters may only be used in a function definition
+"../timers.c", line 7: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 7: warning #93-D: identifier-list parameters may only be used in a function definition
+"../timers.c", line 8: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 8: warning #93-D: identifier-list parameters may only be used in a function definition
+"../timers.c", line 9: warning #78-D: this declaration has no storage class or type specifier
+"../timers.c", line 9: warning #93-D: identifier-list parameters may only be used in a function definition
+"../timers.c", line 12: warning #225-D: function "TimerIntClear" declared implicitly
+"../timers.c", line 12: error #20: identifier "TIMER0_BASE" is undefined
+"../timers.c", line 12: error #20: identifier "TIMER_TIMA_TIMEOUT" is undefined
+"../timers.c", line 13: error #20: identifier "GPIO_PORTQ_DATA_R" is undefined
+"../timers.c", line 13: error #20: identifier "GPIO_PIN_7" is undefined
+10 errors detected in the compilation of "../timers.c".
+gmake: *** [timers.obj] Error 1
+gmake: Target 'all' not remade because of errors.
+
+**** Build Finished ****
