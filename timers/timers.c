@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -39,7 +40,7 @@
 #include "driverlib/timer.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
-#include <stdbool.h>
+
 #include "grlib/grlib.h"
 #include "grlib/widget.h"
 #include "grlib/canvas.h"
@@ -89,8 +90,10 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
-volatile char g1 = '0';
-volatile char g2 = '0';
+char textToDisplay1[10];
+char textToDisplay2[10];
+volatile uint32_t g1 = 0;
+volatile uint32_t g2 = 0;
 
 //*****************************************************************************
 //
@@ -101,6 +104,7 @@ void
 Timer0IntHandler(void)
 {
     char cOne, cTwo;
+    g1++;
 
     //
     // Clear the timer interrupt.
@@ -125,8 +129,9 @@ Timer0IntHandler(void)
     cTwo = HWREGBITW(&g_ui32Flags, 1) ? '1' : '0';
     UARTprintf("\rT1: %c  T2: %c", cOne, cTwo);
     MAP_IntMasterEnable();
-    g1 = cOne;
-    g2 = cTwo;
+    // we had both g1 g2 in timer0 and timer1
+    // g1 = (int)(cOne)-48;
+    // g2 = (int)(cTwo)-48;
 }
 
 //*****************************************************************************
@@ -138,6 +143,7 @@ void
 Timer1IntHandler(void)
 {
     char cOne, cTwo;
+    g2++;
 
     //
     // Clear the timer interrupt.
@@ -162,8 +168,8 @@ Timer1IntHandler(void)
     cTwo = HWREGBITW(&g_ui32Flags, 1) ? '1' : '0';
     UARTprintf("\rT1: %c  T2: %c", cOne, cTwo);
     MAP_IntMasterEnable();
-    g1 = cOne;
-    g2 = cTwo;
+    // g1 =(int)(cOne)-48;
+    // g2 = (int)(cTwo)-48;
 }
 
 //*****************************************************************************
@@ -292,9 +298,6 @@ main(void)
                                                  SYSCTL_USE_PLL |
                                                  SYSCTL_CFG_VCO_240), 120000000);
 
-//        snprintf("\rT1: %c  T2: %c", g1, g2)
-//       writeScreen("e");
-
     //
     // Initialize the UART and write status.
     //
@@ -330,8 +333,8 @@ main(void)
     //
     MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
     MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
-    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock*2);
-    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, g_ui32SysClock);
+    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/1.25); // 0.8
+    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, g_ui32SysClock/10); // 0.1
 
     //
     // Setup the interrupts for the timer timeouts.
@@ -347,10 +350,81 @@ main(void)
     MAP_TimerEnable(TIMER0_BASE, TIMER_A);
     MAP_TimerEnable(TIMER1_BASE, TIMER_A);
 
+
+
+    tContext sContext;
+    tRectangle sRect;
+
+    //
+    // The FPU should be enabled because some compilers will use floating-
+    // point registers, even for non-floating-point code.  If the FPU is not
+    // enabled this will cause a fault.  This also ensures that floating-
+    // point operations could be added to this application and would work
+    // correctly and use the hardware floating-point unit.  Finally, lazy
+    // stacking is enabled for interrupt handlers.  This allows floating-
+    // point instructions to be used within interrupt handlers, but at the
+    // expense of extra stack usage.
+    //
+    FPUEnable();
+    FPULazyStackingEnable();
+
+
+    //
+    // Initialize the display driver.
+    //
+    Kentec320x240x16_SSD2119Init(g_ui32SysClock);
+
+    //
+    // Initialize the graphics context.
+    //
+    GrContextInit(&sContext, &g_sKentec320x240x16_SSD2119);
+
+  ///*
+  // Fill the top 24 rows of the screen with blue to create the banner.
+  //
+  sRect.i16XMin = 0;
+  sRect.i16YMin = 0;
+  sRect.i16XMax = GrContextDpyWidthGet(&sContext) - 1;
+  sRect.i16YMax = 50;
+  GrContextForegroundSet(&sContext, ClrDarkBlue);
+  GrRectFill(&sContext, &sRect);
+
+  //
+  // Put a white box around the banner.
+  //
+  GrContextForegroundSet(&sContext, ClrWhite);
+  GrRectDraw(&sContext, &sRect);
+  //*/
+
+    //
+    // Configure and enable uDMA
+    //
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UDMA);
+    SysCtlDelay(10);
+    //
+    TouchScreenInit(g_ui32SysClock);
+    TouchScreenCallbackSet(WidgetPointerMessage);
+
+
     //
     // Loop forever while the timers run.
     //
     while(1)
     {
+
+          //
+          // Put the application name in the middle of the banner.
+          //
+         // WidgetMessageQueueProcess();
+          //sprintf(textToDisplay1,"%d", g1);
+          //sprintf(textToDisplay2,"%d", g2);
+
+          GrContextFontSet(&sContext, &g_sFontCm20);
+          GrStringDrawCentered(&sContext, "t1" , strlen(textToDisplay1),
+                               GrContextDpyWidthGet(&sContext) / 2, 8, 0);
+
+          GrStringDrawCentered(&sContext, "t2" , strlen(textToDisplay2),
+                                         GrContextDpyWidthGet(&sContext) / 2, 28, 0);
+
     }
 }
